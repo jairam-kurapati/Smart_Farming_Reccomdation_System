@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Farming Recommendation System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div class="sidebar-brand-text">
+                    <span class="sidebar-brand-title">Smart Farming</span>
+                    <span class="sidebar-brand-sub">Recommendation System</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <p class="sidebar-nav-label">Navigation</p>
+            <a href="{{ url_for('index') }}" id="nav-home"
+               class="sidebar-nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                <span class="sidebar-nav-icon"><i class="fas fa-house"></i></span>
+                <span class="sidebar-nav-text">Home</span>
+            </a>
+            <a href="{{ url_for('recommend') }}" id="nav-recommend"
+               class="sidebar-nav-link {% if request.endpoint == 'recommend' %}active{% endif %}">
+                <span class="sidebar-nav-icon"><i class="fas fa-seedling"></i></span>
+                <span class="sidebar-nav-text">Recommendation</span>
+            </a>
+            <a href="{{ url_for('about') }}" id="nav-about"
+               class="sidebar-nav-link {% if request.endpoint == 'about' %}active{% endif %}">
+                <span class="sidebar-nav-icon"><i class="fas fa-circle-info"></i></span>
+                <span class="sidebar-nav-text">About</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div id="google_translate_element" class="language-selector"></div>
+        </div>
+    </aside>
+
+    <!-- Mobile hamburger -->
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <div class="page-wrapper">
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="footer">
+            <div class="footer-container">
+                <p>&copy; Smart Farming Recommendation System</p>
+                <p>Built with Machine Learning (DT, RF, KNN, SVM) | Flask | HTML/CSS/JavaScript</p>
+            </div>
+        </footer>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <script>
+        // Sidebar toggle for mobile
+        const toggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        toggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        });
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+    </script>
+
+    <!-- Google Translate Script -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en'
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

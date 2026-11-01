@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+
+{% block title %}Recommendation Tool - Smart Farming{% endblock %}
+
+{% block content %}
+<section class="hero" id="recommend-hero">
+    <div class="hero-content">
+        <h1>Crop Recommendation Tool</h1>
+        <p>Enter soil and weather parameters to get personalized crop suggestions.</p>
+    </div>
+</section>
+
+<div class="container">
+    <section class="form-section" id="form">
+        <div class="section-header">
+            <h2>Recommendation Form</h2>
+            <p class="section-subtitle">Fill in the values and compare predictions from four ML models.</p>
+        </div>
+        <div class="form-container">
+            <form id="recommendationForm">
+                <div class="form-group">
+                    <label for="model-select">Choose Model</label>
+                    <select id="model-select" name="model" class="form-control" required>
+                        <option value="rf" selected>Random Forest</option>
+                        <option value="dt">Decision Tree</option>
+                        <option value="knn">K-Nearest Neighbors</option>
+                        <option value="svm">Support Vector Machine</option>
+                    </select>
+                    <small>Select the model that should drive the main crop recommendation.</small>
+                </div>
+                <div class="form-group preset-group">
+                    <label for="preset-select">Quick Preset</label>
+                    <select id="preset-select" class="form-control">
+                        <option value="">Choose a preset example</option>
+                        <option value="highRain">High Rainfall Vegetable</option>
+                        <option value="drySeason">Dry Season Grain</option>
+                        <option value="balancedSoil">Balanced Soil All-Purpose</option>
+                    </select>
+                    <small>Load example values for quick testing.</small>
+                </div>
+                <fieldset class="form-fieldset">
+                    <legend><i class="fas fa-flask"></i> Soil Parameters</legend>
+                    <div class="form-group">
+                        <label for="nitrogen">Nitrogen (N) <span class="unit">kg/ha</span></label>
+                        <input type="number" id="nitrogen" name="N" min="0" max="140" step="0.1" required>
+                        <small>Range: 0-140 kg/ha</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="phosphorus">Phosphorus (P) <span class="unit">kg/ha</span></label>
+                        <input type="number" id="phosphorus" name="P" min="0" max="150" step="0.1" required>
+                        <small>Range: 0-150 kg/ha</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="potassium">Potassium (K) <span class="unit">kg/ha</span></label>
+                        <input type="number" id="potassium" name="K" min="0" max="210" step="0.1" required>
+                        <small>Range: 0-210 kg/ha</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="ph">pH Level <span class="unit">0-14</span></label>
+                        <input type="number" id="ph" name="ph" min="0" max="14" step="0.1" required>
+                        <small>Range: 0-14</small>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-fieldset">
+                    <legend><i class="fas fa-cloud-sun"></i> Weather Parameters</legend>
+                    <div class="form-group weather-sensor-group">
+                        <label for="city-input"><i class="fas fa-satellite-dish"></i> Live IoT Weather Sensor (Open-Meteo)</label>
+                        <div class="sensor-input-wrapper">
+                            <input type="text" id="city-input" class="form-control-sensor" placeholder="Enter any city name (e.g. Guntur, Hyderabad, Delhi)">
+                            <button type="button" id="btn-fetch-weather" class="btn btn-secondary btn-sensor">
+                                <i class="fas fa-satellite"></i> Fetch Live Data
+                            </button>
+                        </div>
+                        <small>Enter any city name worldwide to fetch real-time temperature, humidity, and simulated rainfall via geocoded satellite weather feeds.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="temperature">Temperature <span class="unit">°C</span></label>
+                        <input type="number" id="temperature" name="temperature" min="-10" max="50" step="0.1" required>
+                        <small>Range: -10 to 50°C</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="humidity">Humidity <span class="unit">%</span></label>
+                        <input type="number" id="humidity" name="humidity" min="0" max="100" step="0.1" required>
+                        <small>Range: 0-100%</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="rainfall">Rainfall <span class="unit">mm</span></label>
+                        <input type="number" id="rainfall" name="rainfall" min="0" max="300" step="0.1" required>
+                        <small>Range: 0-300 mm</small>
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="btn btn-primary btn-large">
+                    <i class="fas fa-magic"></i>
+                    Get Recommendations
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section class="batch-section" id="batch-section">
+        <div class="section-header">
+            <h2>Batch Prediction</h2>
+            <p class="section-subtitle">Upload a CSV to predict crops for multiple rows at once.</p>
+        </div>
+        <div class="form-container">
+            <form id="batchForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="batch-file">Upload CSV File</label>
+                    <input type="file" id="batch-file" name="file" accept=".csv" class="form-control" required>
+                    <small>CSV must include: N, P, K, temperature, humidity, ph, rainfall.</small>
+                </div>
+                <button type="submit" class="btn btn-secondary btn-large">
+                    <i class="fas fa-upload"></i>
+                    Upload and Predict
+                </button>
+            </form>
+        </div>
+        <div id="batchLoadingSpinner" class="spinner" style="display: none;">
+            <div class="spinner-border"></div>
+            <p>Processing file and generating batch predictions...</p>
+        </div>
+        <div id="batchErrorMessage" class="alert alert-error" style="display: none;"></div>
+        <div id="batchResultsSection" class="batch-results-section" style="display: none;">
+            <div class="batch-actions">
+                <button class="btn btn-primary" type="button" onclick="downloadBatchCSV()">
+                    <i class="fas fa-download"></i>
+                    Download CSV Results
+                </button>
+            </div>
+            <div class="batch-table-wrapper">
+                <table class="batch-results-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Crop</th>
+                            <th>Season</th>
+                            <th>Soil</th>
+                            <th>Water</th>
+                            <th>Spacing</th>
+                            <th>Input Summary</th>
+                        </tr>
+                    </thead>
+                    <tbody id="batch-results-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="results-section" id="results" style="display: none;">
+        <h2>Recommendation Results</h2>
+        <div id="loadingSpinner" class="spinner" style="display: none;">
+            <div class="spinner-border"></div>
+            <p>Analyzing conditions and generating recommendations...</p>
+        </div>
+        <div id="resultsContent" style="display: none;">
+            <div class="selected-model-summary">
+                <h3>Primary Model Used</h3>
+                <p id="selected-model-name" class="selected-model-name"></p>
+                <p id="selected-model-description" class="selected-model-description"></p>
+                <p class="selected-model-meta"><strong>Best for:</strong> <span id="selected-model-bestfor"></span></p>
+                <p class="selected-model-meta"><strong>Confidence:</strong> <span id="selected-model-confidence"></span></p>
+                <div class="model-consensus-card">
+                    <h4>Consensus</h4>
+                    <p id="consensus-result">Comparing all model predictions...</p>
+                    <p class="selected-model-meta"><strong>Agreement:</strong> <span id="consensus-count"></span></p>
+                </div>
+            </div>
+            <div class="crop-details-card">
+                <h3>Recommended Crop Details</h3>
+                <div class="crop-details-grid">
+                    <div><strong>Crop</strong><span id="detail-crop-name"></span></div>
+                    <div><strong>Best Season</strong><span id="detail-best-season"></span></div>
+                    <div><strong>Soil Type</strong><span id="detail-soil-type"></span></div>
+                    <div><strong>Water Requirement</strong><span id="detail-water-requirement"></span></div>
+                    <div><strong>Recommended Spacing</strong><span id="detail-spacing"></span></div>
+                </div>
+                <p id="detail-notes" class="crop-detail-notes"></p>
+            </div>
+            <div class="crop-ranges-card" id="crop-ranges-card" style="display: none;">
+                <h3><i class="fas fa-chart-bar"></i> Agronomical Input Fit Explanation (XAI)</h3>
+                <p class="section-note">Shows how your soil and climatic parameters align with the optimal historical ranges for the recommended crop in the dataset. Green indicates optimal; red/orange indicates outside normal range.</p>
+                <div id="crop-ranges-container" class="ranges-container">
+                    <!-- Dynamic range gauges will be inserted here -->
+                </div>
+            </div>
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="card-header">
+                        <i class="fas fa-tree"></i>
+                        <h3>Decision Tree</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="recommendation-box">
+                            <h4>Recommended Crop</h4>
+                            <p id="dt-crop" class="crop-name">Loading...</p>
+                        </div>
+                        <div class="confidence-box">
+                            <h4>Top 5 Recommendations</h4>
+                            <div id="dt-alternatives" class="alternatives-list"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-card">
+                    <div class="card-header">
+                        <i class="fas fa-forest"></i>
+                        <h3>Random Forest</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="recommendation-box">
+                            <h4>Recommended Crop</h4>
+                            <p id="rf-crop" class="crop-name">Loading...</p>
+                        </div>
+                        <div class="confidence-box">
+                            <h4>Top 5 Recommendations</h4>
+                            <div id="rf-alternatives" class="alternatives-list"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-card">
+                    <div class="card-header">
+                        <i class="fas fa-users"></i>
+                        <h3>K-Nearest Neighbors</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="recommendation-box">
+                            <h4>Recommended Crop</h4>
+                            <p id="knn-crop" class="crop-name">Loading...</p>
+                        </div>
+                        <div class="confidence-box">
+                            <h4>Top 5 Recommendations</h4>
+                            <div id="knn-alternatives" class="alternatives-list"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-card">
+                    <div class="card-header">
+                        <i class="fas fa-vector-square"></i>
+                        <h3>Support Vector Machine</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="recommendation-box">
+                            <h4>Recommended Crop</h4>
+                            <p id="svm-crop" class="crop-name">Loading...</p>
+                        </div>
+                        <div class="confidence-box">
+                            <h4>Top 5 Recommendations</h4>
+                            <div id="svm-alternatives" class="alternatives-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-importance-section">
+                <h3><i class="fas fa-chart-line"></i> Feature Importance</h3>
+                <p class="section-note">Important factors influencing the prediction.</p>
+                <div class="importance-grid">
+                    <div class="importance-card">
+                        <h4>Decision Tree</h4>
+                        <div id="dt-importance" class="importance-bars"></div>
+                    </div>
+                    <div class="importance-card">
+                        <h4>Random Forest</h4>
+                        <div id="rf-importance" class="importance-bars"></div>
+                    </div>
+                    <div class="importance-card">
+                        <h4>KNN</h4>
+                        <div id="knn-importance" class="importance-bars">
+                            <p class="info-note"><i class="fas fa-info-circle"></i> KNN does not calculate feature importance.</p>
+                        </div>
+                    </div>
+                    <div class="importance-card">
+                        <h4>SVM</h4>
+                        <div id="svm-importance" class="importance-bars">
+                            <p class="info-note"><i class="fas fa-info-circle"></i> SVM does not provide direct importance here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h3><i class="fas fa-list-check"></i> Input Summary</h3>
+                <div class="summary-grid">
+                    <div class="summary-item"><span class="label">Nitrogen (N)</span><span id="sum-N" class="value">--</span></div>
+                    <div class="summary-item"><span class="label">Phosphorus (P)</span><span id="sum-P" class="value">--</span></div>
+                    <div class="summary-item"><span class="label">Potassium (K)</span><span id="sum-K" class="value">--</span></div>
+                    <div class="summary-item"><span class="label">Temperature</span><span id="sum-temp" class="value">--</span></div>
+                    <div class="summary-item"><span class="label">Humidity</span><span id="sum-hum" class="value">--</span></div>
+                    <div class="summary-item"><span class="label">pH Level</span><span id="sum-ph" class="value">--</span></div>
+                    <div class="summary-item"><span class="label">Rainfall</span><span id="sum-rain" class="value">--</span></div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary btn-large" onclick="resetForm()">
+                <i class="fas fa-redo"></i>
+                Get New Recommendation
+            </button>
+        </div>
+
+        <div id="errorMessage" class="alert alert-error" style="display: none;"></div>
+    </section>
+
+    <section class="history-section" id="history-section">
+        <div class="section-header">
+            <h2>Prediction History</h2>
+            <p class="section-subtitle">Your recent predictions are stored locally in the browser.</p>
+        </div>
+        <div class="history-actions">
+            <button class="btn btn-secondary" type="button" onclick="clearPredictionHistory()">
+                <i class="fas fa-trash"></i>
+                Clear History
+            </button>
+            <button class="btn btn-primary" type="button" onclick="downloadHistoryCSV()">
+                <i class="fas fa-file-csv"></i>
+                Export History
+            </button>
+        </div>
+        <div class="history-table-wrapper">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Model</th>
+                        <th>Crop</th>
+                        <th>Season</th>
+                        <th>Soil</th>
+                        <th>Water</th>
+                        <th>Spacing</th>
+                        <th>Inputs</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+            </table>
+        </div>
+        <div id="historyEmpty" class="history-empty">No history yet. Make a prediction to save it.</div>
+    </section>
+</div>
+{% endblock %}

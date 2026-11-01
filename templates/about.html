@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Smart Farming Recommendation System{% endblock %}
+
+{% block content %}
+<section class="hero about-hero">
+    <div class="hero-content">
+        <h1>About Smart Farming</h1>
+        <p>Learn how our system uses machine learning to support crop selection and precision agriculture.</p>
+    </div>
+</section>
+
+<div class="container">
+    <section class="about-section">
+        <h2>About This System</h2>
+        <div class="about-grid">
+            <div class="about-card">
+                <i class="fas fa-brain"></i>
+                <h3>AI-Powered</h3>
+                <p>Uses 4 ML algorithms: Decision Tree, Random Forest, KNN, and SVM for accurate predictions.</p>
+            </div>
+            <div class="about-card">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Feature Analysis</h3>
+                <p>Understand which soil and weather features most influence crop recommendations.</p>
+            </div>
+            <div class="about-card">
+                <i class="fas fa-leaf"></i>
+                <h3>Precision Agriculture</h3>
+                <p>Optimize crop selection based on soil nutrients, moisture, and climate factors.</p>
+            </div>
+            <div class="about-card">
+                <i class="fas fa-tractor"></i>
+                <h3>Farmer Friendly</h3>
+                <p>Simple interface for recommendations with clear explanations and confidence scores.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section">
+        <h2>How It Works</h2>
+        <div class="features-grid">
+            <div class="feature-item"><div class="feature-number">1</div><h3>Enter Parameters</h3><p>Submit soil nutrients, pH, and weather inputs.</p></div>
+            <div class="feature-item"><div class="feature-number">2</div><h3>Model Analysis</h3><p>Four trained models analyze your conditions.</p></div>
+            <div class="feature-item"><div class="feature-number">3</div><h3>Get Recommendations</h3><p>Receive crop suggestions with confidence scores.</p></div>
+            <div class="feature-item"><div class="feature-number">4</div><h3>Compare Models</h3><p>See model consensus and choose the best recommendation.</p></div>
+        </div>
+    </section>
+
+    <section class="benchmarks-section">
+        <h2>Model Evaluation & Benchmarks</h2>
+        <p class="section-subtitle">Comparative performance metrics of the four supervised learning algorithms trained on the dataset of 2,200 samples.</p>
+        
+        <div class="benchmarks-grid">
+            <div class="chart-container-about">
+                <h3>Accuracy Comparison (%)</h3>
+                <div class="about-chart">
+                    <div class="about-chart-bar-wrapper">
+                        <div class="about-chart-label">Random Forest</div>
+                        <div class="about-chart-bar-track">
+                            <div class="about-chart-bar-fill rf-fill" style="width: 96.36%;">96.36%</div>
+                        </div>
+                    </div>
+                    <div class="about-chart-bar-wrapper">
+                        <div class="about-chart-label">SVM</div>
+                        <div class="about-chart-bar-track">
+                            <div class="about-chart-bar-fill svm-fill" style="width: 94.50%;">94.50%</div>
+                        </div>
+                    </div>
+                    <div class="about-chart-bar-wrapper">
+                        <div class="about-chart-label">KNN</div>
+                        <div class="about-chart-bar-track">
+                            <div class="about-chart-bar-fill knn-fill" style="width: 92.80%;">92.80%</div>
+                        </div>
+                    </div>
+                    <div class="about-chart-bar-wrapper">
+                        <div class="about-chart-label">Decision Tree</div>
+                        <div class="about-chart-bar-track">
+                            <div class="about-chart-bar-fill dt-fill" style="width: 90.91%;">90.91%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-container-about">
+                <h3>Model Performance Metrics</h3>
+                <div class="table-responsive">
+                    <table class="benchmarks-table">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Accuracy</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1-Score</th>
+                                <th>Rank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="rank-1">
+                                <td><strong>Random Forest</strong></td>
+                                <td>96.36%</td>
+                                <td>0.96</td>
+                                <td>0.95</td>
+                                <td>0.95</td>
+                                <td><span class="badge badge-rank1">1st</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SVM</strong></td>
+                                <td>94.50%</td>
+                                <td>0.94</td>
+                                <td>0.93</td>
+                                <td>0.93</td>
+                                <td><span class="badge badge-rank2">2nd</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>KNN</strong></td>
+                                <td>92.80%</td>
+                                <td>0.92</td>
+                                <td>0.91</td>
+                                <td>0.91</td>
+                                <td><span class="badge badge-rank3">3rd</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Decision Tree</strong></td>
+                                <td>90.91%</td>
+                                <td>0.91</td>
+                                <td>0.90</td>
+                                <td>0.90</td>
+                                <td><span class="badge badge-rank4">4th</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="benchmarks-comparison">
+            <h3>Comparison with Existing Approaches</h3>
+            <p>Our proposed multi-model crop advisory system outperforms existing single-model and standalone architectures by integrating multiple algorithms and explainability features.</p>
+            <div class="comparison-cards">
+                <div class="comparison-card">
+                    <h4>SVM-Based Approach [9]</h4>
+                    <span class="metric">91.20%</span>
+                </div>
+                <div class="comparison-card">
+                    <h4>Decision Tree Model [8]</h4>
+                    <span class="metric">89.50%</span>
+                </div>
+                <div class="comparison-card">
+                    <h4>RF-Based Crop Prediction [12]</h4>
+                    <span class="metric">94.00%</span>
+                </div>
+                <div class="comparison-card">
+                    <h4>IoT-Based Advisory [13]</h4>
+                    <span class="metric">93.10%</span>
+                </div>
+                <div class="comparison-card premium-card">
+                    <h4>Proposed Multi-Model System</h4>
+                    <span class="metric highlight">96.36%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="catalogue-section">
+        <h2>Supported Crops Catalogue</h2>
+        <p class="section-subtitle">Explore the growing conditions, spacing, and water requirements of the 22 crops recommended by the framework.</p>
+        
+        <div id="crops-catalogue-grid" class="catalogue-grid">
+            <div class="loading-catalogue">Loading crop library...</div>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Smart Farming Recommendation System{% endblock %}
+
+{% block content %}
+<section class="hero home-hero">
+    <div class="hero-content">
+        <h1>🌾 Smart Farming Recommendation System</h1>
+        <p>Machine Learning-Based Precision Agriculture Platform</p>
+        <div class="home-actions">
+            <a href="{{ url_for('recommend') }}" class="btn btn-primary btn-large">Use Recommendation Tool</a>
+            <a href="{{ url_for('about') }}" class="btn btn-secondary btn-large">Learn More</a>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <section class="about-section">
+        <h2>Why Use This System?</h2>
+        <div class="about-grid">
+            <div class="about-card">
+                <i class="fas fa-brain"></i>
+                <h3>AI-Powered</h3>
+                <p>Four machine learning models work together to suggest the best crop choice.</p>
+            </div>
+            <div class="about-card">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Clear Insights</h3>
+                <p>See model recommendations and how the system ranks potential crops.</p>
+            </div>
+            <div class="about-card">
+                <i class="fas fa-leaf"></i>
+                <h3>Precision Agriculture</h3>
+                <p>Optimize crop selection based on soil nutrients, humidity, temperature, pH, and rainfall.</p>
+            </div>
+            <div class="about-card">
+                <i class="fas fa-tractor"></i>
+                <h3>Easy to Use</h3>
+                <p>Navigate between separate pages instead of one long scrolling layout.</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
